@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeDoc AI — Unidades</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="pagina-interna">
+
+    <header class="topo">
+        <div class="topo-logo">SafeDoc <span>AI</span></div>
+        <div class="topo-usuario">
+            <span id="nome-usuario">Carregando...</span>
+            <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+    </header>
+
+    <main class="conteudo">
+
+        <div class="cabecalho-pagina">
+            <div>
+                <h2 class="titulo-pagina">Unidades</h2>
+                <p class="subtitulo-pagina">Gerencie todas as unidades da franquia</p>
+            </div>
+            <button class="btn-primario" onclick="window.location.href='dashboard.html'">
+                ← Voltar
+            </button>
+        </div>
+
+        <!-- Tabela de unidades -->
+        <div class="tabela-wrapper">
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome da Unidade</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-unidades">
+                    <tr>
+                        <td colspan="7" class="carregando">Carregando unidades...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
