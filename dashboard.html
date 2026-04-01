@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeDoc AI — Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="pagina-interna">
+
+    <header class="topo">
+        <div class="topo-logo">SafeDoc <span>AI</span></div>
+        <div class="topo-usuario">
+            <span id="nome-usuario">Carregando...</span>
+            <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+    </header>
+
+    <main class="conteudo">
+
+        <h2 class="titulo-pagina">Dashboard</h2>
+        <p class="subtitulo-pagina">Visão geral de todas as unidades da franquia</p>
+
+        <!-- Cards de resumo -->
+        <div class="cards-resumo">
+
+            <div class="card card-verde">
+                <div class="card-numero" id="total-em-dia">--</div>
+                <div class="card-label">Em Dia</div>
+            </div>
+
+            <div class="card card-amarelo">
+                <div class="card-numero" id="total-pendente">--</div>
+                <div class="card-label">Pendentes</div>
+            </div>
+
+            <div class="card card-vermelho">
+                <div class="card-numero" id="total-vencido">--</div>
+                <div class="card-label">Vencidos</div>
+            </div>
+
+            <div class="card card-azul">
+                <div class="card-numero" id="total-unidades">--</div>
+                <div class="card-label">Total de Unidades</div>
+            </div>
+
+        </div>
+
+        <!-- Botão para ver unidades -->
+        <div class="acao-dashboard">
+            <button class="btn-primario" onclick="window.location.href='unidades.html'">
+                Ver todas as unidades
+            </button>
+        </div>
+
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
