@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:5291/api";
+
 const STORAGE_KEYS = {
   requiredDocs: 'safedoc_required_docs',
   units: 'safedoc_units',
@@ -54,6 +56,56 @@ function badgeClass(status) {
   if (normalized.includes('dia')) return 'badge badge-success';
   if (normalized.includes('aten') || normalized.includes('vencendo')) return 'badge badge-warning';
   return 'badge badge-danger';
+}
+
+async function testarConexaoApi() {
+  try {
+    const resposta = await fetch(`${API_URL}/Health`);
+    if (!resposta.ok) throw new Error("API respondeu com erro");
+
+    const dados = await resposta.json();
+
+    const statusEl = document.getElementById("api-status");
+    if (statusEl) {
+      statusEl.textContent = `API conectada: ${dados.message}`;
+      statusEl.className = "api-status api-status--ok";
+    }
+
+    console.log("Health OK:", dados);
+    return true;
+  } catch (erro) {
+    const statusEl = document.getElementById("api-status");
+    if (statusEl) {
+      statusEl.textContent = "API offline ou inacessível.";
+      statusEl.className = "api-status api-status--erro";
+    }
+
+    console.error("Erro ao testar API:", erro);
+    return false;
+  }
+}
+
+async function testarEndpointDocumentos() {
+  try {
+    const resposta = await fetch(`${API_URL}/Documentos`);
+    if (!resposta.ok) throw new Error("Erro ao consultar documentos");
+
+    const dados = await resposta.json();
+
+    const documentosEl = document.getElementById("api-documentos-teste");
+    if (documentosEl) {
+      documentosEl.textContent = JSON.stringify(dados, null, 2);
+    }
+
+    console.log("Documentos endpoint:", dados);
+  } catch (erro) {
+    console.error("Erro no endpoint de documentos:", erro);
+
+    const documentosEl = document.getElementById("api-documentos-teste");
+    if (documentosEl) {
+      documentosEl.textContent = "Não foi possível consultar /api/Documentos";
+    }
+  }
 }
 
 function renderRequiredDocs() {
@@ -272,4 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupRequiredDocsModal();
   setupUpload();
   setupAnalysis();
+
+  if (current === 'dashboard') {
+    testarConexaoApi();
+    testarEndpointDocumentos();
+  }
 });
