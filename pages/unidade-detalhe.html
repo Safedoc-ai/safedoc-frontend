@@ -1,1 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidade Centro | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="unidades">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">Unidade Centro</h1>
+          <div class="location-row"><span>📍</span><span>São Paulo, SP</span></div>
+        </div>
+      </header>
+
+      <section class="content-stack">
+        <div class="grid-3 unidade-top-cards" id="unit-summary-cards">
+          <article class="stat-card stat-success"><div class="stat-icon">✓</div><div><div class="label">Em Dia</div><div class="value">2</div></div></article>
+          <article class="stat-card stat-warning"><div class="stat-icon">!</div><div><div class="label">Vencendo</div><div class="value">1</div></div></article>
+          <article class="stat-card stat-danger"><div class="stat-icon">×</div><div><div class="label">Vencidos</div><div class="value">1</div></div></article>
+        </div>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Documentos Enviados</h2>
+              <p class="panel-subtitle">Lista de todos os documentos da unidade</p>
+            </div>
+            <a class="btn btn-primary" href="upload-documento.html">⇪ Enviar Documento</a>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Documento</th>
+                  <th>Data de Emissão</th>
+                  <th>Data de Validade</th>
+                  <th>Status</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody id="unit-docs-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
 

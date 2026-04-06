@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enviar Documento | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="unidades">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <div class="page-title-row"><div class="page-icon">⇪</div><h1 class="page-title">Enviar Documento</h1></div>
+          <p class="page-subtitle">Faça o upload do documento e preencha as informações</p>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="panel-body" style="padding-top:28px">
+          <form class="form-grid" id="upload-form">
+            <div class="form-group">
+              <label class="form-label">Arquivo do Documento</label>
+              <input class="hidden-file-input" id="arquivo-documento" name="arquivo-documento" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+              <label class="upload-box upload-box-clickable" for="arquivo-documento">
+                <div>
+                  <div class="upload-icon">⇪</div>
+                  <div class="upload-title">Clique para fazer upload</div>
+                  <div class="upload-subtitle">PDF ou imagem (JPG, PNG)</div>
+                  <div class="upload-file-name" id="upload-file-name">Nenhum arquivo selecionado</div>
+                </div>
+              </label>
+            </div>
+
+            <div class="two-col">
+              <div class="form-group">
+                <label class="form-label" for="tipo-documento">Tipo do Documento</label>
+                <select class="select" id="tipo-documento" required>
+                  <option value="">Selecione o tipo</option>
+                  <option value="Alvará de Funcionamento">Alvará de Funcionamento</option>
+                  <option value="AVCB - Corpo de Bombeiros">AVCB - Corpo de Bombeiros</option>
+                  <option value="Licença Sanitária">Licença Sanitária</option>
+                  <option value="Contrato Social">Contrato Social</option>
+                  <option value="Certidão Negativa de Débitos">Certidão Negativa de Débitos</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="nome-unidade">Nome da Unidade</label>
+                <input class="input" id="nome-unidade" type="text" value="Unidade Centro" readonly />
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="form-group">
+                <label class="form-label" for="data-emissao">Data de Emissão</label>
+                <input class="input" id="data-emissao" type="text" placeholder="dd/mm/aaaa" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="data-validade">Data de Validade</label>
+                <input class="input" id="data-validade" type="text" placeholder="dd/mm/aaaa" required />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary btn-wide" type="submit">Analisar com IA (Mock)</button>
+              <button class="btn btn-secondary btn-wide" type="button" id="enviar-documento-btn">Enviar Documento</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
 

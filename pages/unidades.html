@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidades | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="unidades">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <div class="page-title-row"><div class="page-icon">🏢</div><h1 class="page-title">Unidades</h1></div>
+          <p class="page-subtitle">Gerencie todas as unidades da sua rede</p>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome da Unidade</th>
+                <th>Responsável</th>
+                <th>Cidade</th>
+                <th>Status Geral</th>
+                <th>Vencidos</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="units-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
 

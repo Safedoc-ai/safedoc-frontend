@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultado da Análise com IA | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="unidades">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <div class="page-title-row"><div class="page-icon">✦</div><h1 class="page-title">Resultado da Análise com IA</h1></div>
+          <p class="page-subtitle">Análise automática do documento enviado</p>
+        </div>
+      </header>
+
+      <section class="panel result-card">
+        <div class="panel-body" style="padding-top:22px">
+          <div class="result-header">
+            <div class="result-icon">✦</div>
+            <div>
+              <div class="panel-title">Análise Concluída</div>
+              <p class="page-subtitle" style="margin-top:4px">O documento foi analisado e as informações foram extraídas automaticamente</p>
+            </div>
+          </div>
+
+          <div class="alert-box">
+            <strong>Status: Em Dia</strong>
+            <div class="spacer-8"></div>
+            <div>Os campos abaixo foram preenchidos com base nos dados enviados no formulário.</div>
+          </div>
+
+          <div class="spacer-24"></div>
+
+          <div class="info-list">
+            <div class="info-row"><div class="info-label">Arquivo Selecionado</div><div id="analysis-file-name">Nenhum arquivo selecionado</div></div>
+            <div class="info-row"><div class="info-label">Tipo do Documento</div><div id="analysis-document-type">Alvará de Funcionamento</div></div>
+            <div class="info-row"><div class="info-label">Nome da Unidade</div><div id="analysis-unit-name">Unidade Centro</div></div>
+            <div class="info-row"><div class="info-label">Data de Emissão</div><div id="analysis-issue-date">15/08/2025</div></div>
+            <div class="info-row"><div class="info-label">Data de Validade</div><div id="analysis-expiry-date">15/08/2026</div></div>
+          </div>
+
+          <div class="spacer-24"></div>
+          <div class="actions">
+            <button class="btn btn-primary btn-wide" type="button" id="confirmar-analise-btn">Confirmar envio</button>
+            <button class="btn btn-secondary btn-wide" type="button" id="voltar-upload-btn">Voltar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
 

@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentos Obrigatórios | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="documentos">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <div class="page-title-row"><div class="page-icon">📄</div><h1 class="page-title">Documentos Obrigatórios</h1></div>
+          <p class="page-subtitle">Lista de documentos obrigatórios para todas as unidades da rede</p>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Documentos da Rede</h2>
+            <p class="panel-subtitle">Configure os documentos necessários para sua rede</p>
+          </div>
+          <button class="btn btn-primary" type="button" id="novo-documento-btn">＋ Novo Documento</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Frequência</th>
+              </tr>
+            </thead>
+            <tbody id="required-docs-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="required-doc-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="panel-title">Cadastrar novo documento</h2>
+          <p class="panel-subtitle">Adicione um novo documento obrigatório para a rede</p>
+        </div>
+        <button class="modal-close" type="button" id="fechar-modal-btn">×</button>
+      </div>
+      <form class="modal-form" id="required-doc-form">
+        <div class="form-group">
+          <label class="form-label" for="novo-doc-nome">Nome do documento</label>
+          <input class="input" id="novo-doc-nome" type="text" placeholder="Ex: Licença Ambiental" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="novo-doc-frequencia">Frequência</label>
+          <select class="select" id="novo-doc-frequencia" required>
+            <option value="">Selecione</option>
+            <option value="Mensal">Mensal</option>
+            <option value="Trimestral">Trimestral</option>
+            <option value="Semestral">Semestral</option>
+            <option value="Anual">Anual</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary btn-wide" type="button" id="cancelar-modal-btn">Cancelar</button>
+          <button class="btn btn-primary btn-wide" type="submit">Salvar documento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
 

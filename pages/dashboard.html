@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | SafeDoc AI</title>
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">SafeDoc AI</div>
+          <div class="brand-subtitle">Gestão de Documentos</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
+        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div>
+          <div class="page-title-row"><div class="page-icon">↗</div><h1 class="page-title">Dashboard Geral</h1></div>
+          <p class="page-subtitle">Visão geral da situação documental da sua rede</p>
+        </div>
+      </header>
+
+      <section class="content-stack">
+        <section class="grid-3 dashboard-clean-grid">
+          <article class="stat-card stat-success dashboard-clean-card">
+            <div class="stat-icon">✓</div>
+            <div class="dashboard-clean-content">
+              <div class="label">Documentos em dia</div>
+              <div class="value">142</div>
+            </div>
+          </article>
+
+          <article class="stat-card stat-warning dashboard-clean-card">
+            <div class="stat-icon">!</div>
+            <div class="dashboard-clean-content">
+              <div class="label">Documentos vencendo</div>
+              <div class="value">23</div>
+            </div>
+          </article>
+
+          <article class="stat-card stat-danger dashboard-clean-card">
+            <div class="stat-icon">×</div>
+            <div class="dashboard-clean-content">
+              <div class="label">Documentos vencidos</div>
+              <div class="value">8</div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel dashboard-summary-panel">
+          <div class="panel-header dashboard-summary-header">
+            <div>
+              <h2 class="panel-title">Resumo de unidades</h2>
+              <p class="panel-subtitle">Acompanhe rapidamente o status das principais unidades</p>
+            </div>
+            <a class="link-action" href="unidades.html">Abrir lista completa</a>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Unidade</th>
+                  <th>Responsável</th>
+                  <th>Status geral</th>
+                  <th>Vencidos</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Centro</td>
+                  <td>Mariana Costa</td>
+                  <td><span class="badge badge-danger soft-badge">Crítico</span></td>
+                  <td>4</td>
+                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
+                </tr>
+                <tr>
+                  <td>Savassi</td>
+                  <td>Pedro Lima</td>
+                  <td><span class="badge badge-warning soft-badge">Atenção</span></td>
+                  <td>2</td>
+                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
+                </tr>
+                <tr>
+                  <td>Pampulha</td>
+                  <td>Juliana Rocha</td>
+                  <td><span class="badge badge-success soft-badge">Em dia</span></td>
+                  <td>0</td>
+                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+</body>
+</html>
 
