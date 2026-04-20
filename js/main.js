@@ -1,5 +1,3 @@
-const API_URL = "http://localhost:5291/api";
-
 const STORAGE_KEYS = {
   requiredDocs: 'safedoc_required_docs',
   units: 'safedoc_units',
@@ -16,13 +14,13 @@ const DEFAULT_REQUIRED_DOCS = [
 ];
 
 const DEFAULT_UNITS = [
-  { nome: 'Unidade Centro', responsavel: 'Mariana Costa', cidade: 'São Paulo', status: 'Crítico', vencidos: 4 },
-  { nome: 'Unidade Savassi', responsavel: 'Pedro Lima', cidade: 'Belo Horizonte', status: 'Atenção', vencidos: 2 },
-  { nome: 'Unidade Pampulha', responsavel: 'Juliana Rocha', cidade: 'Belo Horizonte', status: 'Em Dia', vencidos: 0 },
-  { nome: 'Unidade Norte', responsavel: 'Carlos Mendes', cidade: 'Campinas', status: 'Vencendo', vencidos: 1 },
-  { nome: 'Unidade Sul', responsavel: 'Fernanda Alves', cidade: 'Santos', status: 'Em Dia', vencidos: 0 },
-  { nome: 'Unidade Oeste', responsavel: 'Renata Souza', cidade: 'Sorocaba', status: 'Vencido', vencidos: 3 },
-  { nome: 'Unidade Leste', responsavel: 'Bruno Castro', cidade: 'São José dos Campos', status: 'Em Dia', vencidos: 0 }
+  { id: 1, nome: 'Unidade Centro', responsavel: 'Mariana Costa', cidade: 'São Paulo', status: 'Crítico', vencidos: 4 },
+  { id: 2, nome: 'Unidade Savassi', responsavel: 'Pedro Lima', cidade: 'Belo Horizonte', status: 'Atenção', vencidos: 2 },
+  { id: 3, nome: 'Unidade Pampulha', responsavel: 'Juliana Rocha', cidade: 'Belo Horizonte', status: 'Em Dia', vencidos: 0 },
+  { id: 4, nome: 'Unidade Norte', responsavel: 'Carlos Mendes', cidade: 'Campinas', status: 'Vencendo', vencidos: 1 },
+  { id: 5, nome: 'Unidade Sul', responsavel: 'Fernanda Alves', cidade: 'Santos', status: 'Em Dia', vencidos: 0 },
+  { id: 6, nome: 'Unidade Oeste', responsavel: 'Renata Souza', cidade: 'Sorocaba', status: 'Vencido', vencidos: 3 },
+  { id: 7, nome: 'Unidade Leste', responsavel: 'Bruno Castro', cidade: 'São José dos Campos', status: 'Em Dia', vencidos: 0 }
 ];
 
 const DEFAULT_UNIT_DOCS = [
@@ -52,7 +50,7 @@ function ensureMockData() {
 }
 
 function badgeClass(status) {
-  const normalized = status.toLowerCase();
+  const normalized = String(status || '').toLowerCase();
   if (normalized.includes('dia')) return 'badge badge-success';
   if (normalized.includes('aten') || normalized.includes('vencendo')) return 'badge badge-warning';
   return 'badge badge-danger';
@@ -60,50 +58,50 @@ function badgeClass(status) {
 
 async function testarConexaoApi() {
   try {
-    const resposta = await fetch(`${API_URL}/Health`);
-    if (!resposta.ok) throw new Error("API respondeu com erro");
+    const response = await fetch('http://localhost:5291/api/Health');
+    if (!response.ok) throw new Error('API respondeu com erro');
 
-    const dados = await resposta.json();
+    const dados = await response.json();
 
-    const statusEl = document.getElementById("api-status");
+    const statusEl = document.getElementById('api-status');
     if (statusEl) {
       statusEl.textContent = `API conectada: ${dados.message}`;
-      statusEl.className = "api-status api-status--ok";
+      statusEl.className = 'api-status api-status--ok';
     }
 
-    console.log("Health OK:", dados);
+    console.log('Health OK:', dados);
     return true;
   } catch (erro) {
-    const statusEl = document.getElementById("api-status");
+    const statusEl = document.getElementById('api-status');
     if (statusEl) {
-      statusEl.textContent = "API offline ou inacessível.";
-      statusEl.className = "api-status api-status--erro";
+      statusEl.textContent = 'API offline ou inacessível.';
+      statusEl.className = 'api-status api-status--erro';
     }
 
-    console.error("Erro ao testar API:", erro);
+    console.error('Erro ao testar API:', erro);
     return false;
   }
 }
 
 async function testarEndpointDocumentos() {
   try {
-    const resposta = await fetch(`${API_URL}/Documentos`);
-    if (!resposta.ok) throw new Error("Erro ao consultar documentos");
+    const response = await fetch('http://localhost:5291/api/Documentos');
+    if (!response.ok) throw new Error('Erro ao consultar documentos');
 
-    const dados = await resposta.json();
+    const dados = await response.json();
 
-    const documentosEl = document.getElementById("api-documentos-teste");
+    const documentosEl = document.getElementById('api-documentos-teste');
     if (documentosEl) {
       documentosEl.textContent = JSON.stringify(dados, null, 2);
     }
 
-    console.log("Documentos endpoint:", dados);
+    console.log('Documentos endpoint:', dados);
   } catch (erro) {
-    console.error("Erro no endpoint de documentos:", erro);
+    console.error('Erro no endpoint de documentos:', erro);
 
-    const documentosEl = document.getElementById("api-documentos-teste");
+    const documentosEl = document.getElementById('api-documentos-teste');
     if (documentosEl) {
-      documentosEl.textContent = "Não foi possível consultar /api/Documentos";
+      documentosEl.textContent = 'Não foi possível consultar /api/Documentos';
     }
   }
 }
@@ -111,7 +109,9 @@ async function testarEndpointDocumentos() {
 function renderRequiredDocs() {
   const body = document.getElementById('required-docs-body');
   if (!body) return;
+
   const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+
   body.innerHTML = docs.map(doc => `
     <tr>
       <td>${doc.nome}</td>
@@ -120,31 +120,35 @@ function renderRequiredDocs() {
   `).join('');
 }
 
-function renderUnits() {
+function renderUnits(unitsFromApi = null) {
   const body = document.getElementById('units-table-body');
   if (!body) return;
-  const units = readStorage(STORAGE_KEYS.units, DEFAULT_UNITS);
+
+  const units = unitsFromApi || readStorage(STORAGE_KEYS.units, DEFAULT_UNITS);
+
   body.innerHTML = units.map(unit => `
     <tr>
       <td>${unit.nome}</td>
-      <td>${unit.responsavel}</td>
+      <td>${unit.responsavel || '-'}</td>
       <td>${unit.cidade}</td>
-      <td><span class="${badgeClass(unit.status)}">${unit.status}</span></td>
-      <td>${unit.vencidos}</td>
-      <td><a class="link-action" href="unidade-detalhe.html">Ver documentos</a></td>
+      <td><span class="${badgeClass(unit.status || 'Em Dia')}">${unit.status || 'Em Dia'}</span></td>
+      <td>${unit.vencidos ?? '-'}</td>
+      <td><a class="link-action" href="unidade-detalhe.html?id=${unit.id || 1}">Ver documentos</a></td>
     </tr>
   `).join('');
 }
 
-function renderUnitDocs() {
+function renderUnitDocs(docsFromApi = null) {
   const body = document.getElementById('unit-docs-body');
   if (!body) return;
-  const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+
+  const docs = docsFromApi || readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+
   body.innerHTML = docs.map(doc => `
     <tr>
       <td>${doc.nome}</td>
-      <td>${doc.emissao}</td>
-      <td>${doc.validade}</td>
+      <td>${doc.emissao || formatDate(doc.dataEmissao)}</td>
+      <td>${doc.validade || formatDate(doc.dataValidade)}</td>
       <td><span class="${badgeClass(doc.status)}">${doc.status}</span></td>
       <td><a class="link-action" href="analise-ia.html">Ver detalhes</a></td>
     </tr>
@@ -152,9 +156,11 @@ function renderUnitDocs() {
 
   const summaryContainer = document.getElementById('unit-summary-cards');
   if (!summaryContainer) return;
+
   const counts = docs.reduce((acc, doc) => {
-    if (doc.status === 'Em Dia') acc.emDia += 1;
-    else if (doc.status === 'Vencendo') acc.vencendo += 1;
+    const status = String(doc.status || '');
+    if (status === 'Em Dia' || status === 'EmDia') acc.emDia += 1;
+    else if (status === 'Vencendo') acc.vencendo += 1;
     else acc.vencidos += 1;
     return acc;
   }, { emDia: 0, vencendo: 0, vencidos: 0 });
@@ -164,6 +170,13 @@ function renderUnitDocs() {
     <article class="stat-card stat-warning"><div class="stat-icon">!</div><div><div class="label">Vencendo</div><div class="value">${counts.vencendo}</div></div></article>
     <article class="stat-card stat-danger"><div class="stat-icon">×</div><div><div class="label">Vencidos</div><div class="value">${counts.vencidos}</div></div></article>
   `;
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return '-';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  return date.toLocaleDateString('pt-BR');
 }
 
 function setupRequiredDocsModal() {
@@ -182,6 +195,7 @@ function setupRequiredDocsModal() {
   openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
   closeBtn?.addEventListener('click', closeModal);
   cancelBtn?.addEventListener('click', closeModal);
+
   modal.addEventListener('click', (event) => {
     if (event.target === modal) closeModal();
   });
@@ -191,6 +205,7 @@ function setupRequiredDocsModal() {
     const nome = document.getElementById('novo-doc-nome').value.trim();
     const frequencia = document.getElementById('novo-doc-frequencia').value;
     if (!nome || !frequencia) return;
+
     const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
     docs.push({ nome, frequencia });
     writeStorage(STORAGE_KEYS.requiredDocs, docs);
@@ -221,12 +236,14 @@ function setupUpload() {
 
   fileInput?.addEventListener('change', () => {
     const selected = fileInput.files && fileInput.files[0];
-    fileName.textContent = selected ? `Arquivo selecionado: ${selected.name}` : 'Nenhum arquivo selecionado';
+    if (fileName) {
+      fileName.textContent = selected ? `Arquivo selecionado: ${selected.name}` : 'Nenhum arquivo selecionado';
+    }
   });
 
   const collectUploadData = () => {
     const selected = fileInput?.files && fileInput.files[0];
-    const uploadData = {
+    return {
       fileName: selected ? selected.name : (pending?.fileName || ''),
       issueDate: issueDate?.value.trim() || '',
       expiryDate: expiryDate?.value.trim() || '',
@@ -234,26 +251,29 @@ function setupUpload() {
       unitName: unitName?.value || 'Unidade Centro',
       status: 'Em Dia'
     };
-    return uploadData;
   };
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const uploadData = collectUploadData();
+
     if (!uploadData.fileName || !uploadData.issueDate || !uploadData.expiryDate || !uploadData.documentType) {
       alert('Preencha arquivo, tipo do documento, data de emissão e data de validade antes de analisar.');
       return;
     }
+
     writeStorage(STORAGE_KEYS.pendingUpload, uploadData);
     window.location.href = 'analise-ia.html';
   });
 
   sendButton?.addEventListener('click', () => {
     const uploadData = collectUploadData();
+
     if (!uploadData.fileName || !uploadData.issueDate || !uploadData.expiryDate || !uploadData.documentType) {
       alert('Preencha todos os campos antes de enviar.');
       return;
     }
+
     const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
     docs.unshift({
       nome: uploadData.documentType,
@@ -261,6 +281,7 @@ function setupUpload() {
       validade: uploadData.expiryDate,
       status: uploadData.status
     });
+
     writeStorage(STORAGE_KEYS.unitDocs, docs);
     localStorage.removeItem(STORAGE_KEYS.pendingUpload);
     window.location.href = 'unidade-detalhe.html';
@@ -300,6 +321,7 @@ function setupAnalysis() {
       validade: pending.expiryDate,
       status: pending.status || 'Em Dia'
     });
+
     writeStorage(STORAGE_KEYS.unitDocs, docs);
     localStorage.removeItem(STORAGE_KEYS.pendingUpload);
     window.location.href = 'unidade-detalhe.html';
@@ -310,10 +332,84 @@ function setupAnalysis() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function integrarDashboard() {
+  const totalEl = document.getElementById('total-unidades');
+  const emDiaEl = document.getElementById('docs-em-dia');
+  const vencendoEl = document.getElementById('docs-vencendo');
+  const vencidosEl = document.getElementById('docs-vencidos');
+
+  if (!totalEl || !emDiaEl || !vencendoEl || !vencidosEl) return;
+  if (typeof fetchDashboard !== 'function') return;
+
+  try {
+    const dashboard = await fetchDashboard();
+    totalEl.textContent = dashboard.totalUnidades;
+    emDiaEl.textContent = dashboard.documentosEmDia;
+    vencendoEl.textContent = dashboard.documentosVencendo;
+    vencidosEl.textContent = dashboard.documentosVencidos;
+  } catch (error) {
+    console.error('Erro ao integrar dashboard:', error);
+  }
+}
+
+async function integrarUnidades() {
+  const body = document.getElementById('units-table-body');
+  if (!body) return;
+  if (typeof fetchUnidades !== 'function') return;
+
+  try {
+    const unidades = await fetchUnidades();
+
+    const unidadesAdaptadas = unidades.map((u) => ({
+      id: u.id,
+      nome: u.nome,
+      responsavel: '-',
+      cidade: u.cidade,
+      status: u.ativa ? 'Em Dia' : 'Vencido',
+      vencidos: '-'
+    }));
+
+    renderUnits(unidadesAdaptadas);
+  } catch (error) {
+    console.error('Erro ao integrar unidades:', error);
+  }
+}
+
+async function integrarDetalheUnidade() {
+  const body = document.getElementById('unit-docs-body');
+  if (!body) return;
+  if (typeof fetchUnidadeDetalhe !== 'function') return;
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || '1';
+
+    const unidade = await fetchUnidadeDetalhe(id);
+
+    const nomeUnidadeEl = document.getElementById('nome-unidade-detalhe');
+    const cidadeUnidadeEl = document.getElementById('cidade-unidade-detalhe');
+
+    if (nomeUnidadeEl) nomeUnidadeEl.textContent = unidade.nome;
+    if (cidadeUnidadeEl) cidadeUnidadeEl.textContent = `${unidade.cidade} - ${unidade.estado}`;
+
+    const docsAdaptados = unidade.documentos.map((doc) => ({
+      nome: doc.nome,
+      emissao: formatDate(doc.dataEmissao),
+      validade: formatDate(doc.dataValidade),
+      status: doc.status
+    }));
+
+    renderUnitDocs(docsAdaptados);
+  } catch (error) {
+    console.error('Erro ao integrar detalhe da unidade:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   ensureMockData();
 
   const current = document.body.dataset.page;
+
   document.querySelectorAll('[data-nav]').forEach(link => {
     if (link.dataset.nav === current) link.classList.add('active');
   });
@@ -326,7 +422,16 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAnalysis();
 
   if (current === 'dashboard') {
-    testarConexaoApi();
-    testarEndpointDocumentos();
+    await testarConexaoApi();
+    await testarEndpointDocumentos();
+    await integrarDashboard();
+  }
+
+  if (current === 'unidades') {
+    await integrarUnidades();
+  }
+
+  if (current === 'unidade-detalhe') {
+    await integrarDetalheUnidade();
   }
 });
