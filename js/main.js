@@ -31,7 +31,9 @@ const DEFAULT_UNIT_DOCS = [
 
 function readStorage(key, fallback) {
   const saved = localStorage.getItem(key);
+
   if (!saved) return fallback;
+
   try {
     return JSON.parse(saved);
   } catch {
@@ -44,26 +46,50 @@ function writeStorage(key, value) {
 }
 
 function ensureMockData() {
-  if (!localStorage.getItem(STORAGE_KEYS.requiredDocs)) writeStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
-  if (!localStorage.getItem(STORAGE_KEYS.units)) writeStorage(STORAGE_KEYS.units, DEFAULT_UNITS);
-  if (!localStorage.getItem(STORAGE_KEYS.unitDocs)) writeStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+  if (!localStorage.getItem(STORAGE_KEYS.requiredDocs)) {
+    writeStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.units)) {
+    writeStorage(STORAGE_KEYS.units, DEFAULT_UNITS);
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.unitDocs)) {
+    writeStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+  }
 }
 
 function badgeClass(status) {
   const normalized = String(status || '').toLowerCase();
+
   if (normalized.includes('dia')) return 'badge badge-success';
   if (normalized.includes('aten') || normalized.includes('vencendo')) return 'badge badge-warning';
+
   return 'badge badge-danger';
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return '-';
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) return dateValue;
+
+  return date.toLocaleDateString('pt-BR');
 }
 
 async function testarConexaoApi() {
   try {
     const response = await fetch('http://localhost:5291/api/Health');
-    if (!response.ok) throw new Error('API respondeu com erro');
+
+    if (!response.ok) {
+      throw new Error('API respondeu com erro');
+    }
 
     const dados = await response.json();
 
     const statusEl = document.getElementById('api-status');
+
     if (statusEl) {
       statusEl.textContent = `API conectada: ${dados.message}`;
       statusEl.className = 'api-status api-status--ok';
@@ -73,6 +99,7 @@ async function testarConexaoApi() {
     return true;
   } catch (erro) {
     const statusEl = document.getElementById('api-status');
+
     if (statusEl) {
       statusEl.textContent = 'API offline ou inacessível.';
       statusEl.className = 'api-status api-status--erro';
@@ -86,11 +113,15 @@ async function testarConexaoApi() {
 async function testarEndpointDocumentos() {
   try {
     const response = await fetch('http://localhost:5291/api/Documentos');
-    if (!response.ok) throw new Error('Erro ao consultar documentos');
+
+    if (!response.ok) {
+      throw new Error('Erro ao consultar documentos');
+    }
 
     const dados = await response.json();
 
     const documentosEl = document.getElementById('api-documentos-teste');
+
     if (documentosEl) {
       documentosEl.textContent = JSON.stringify(dados, null, 2);
     }
@@ -100,6 +131,7 @@ async function testarEndpointDocumentos() {
     console.error('Erro no endpoint de documentos:', erro);
 
     const documentosEl = document.getElementById('api-documentos-teste');
+
     if (documentosEl) {
       documentosEl.textContent = 'Não foi possível consultar /api/Documentos';
     }
@@ -108,6 +140,7 @@ async function testarEndpointDocumentos() {
 
 function renderRequiredDocs() {
   const body = document.getElementById('required-docs-body');
+
   if (!body) return;
 
   const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
@@ -122,6 +155,7 @@ function renderRequiredDocs() {
 
 function renderUnits(unitsFromApi = null) {
   const body = document.getElementById('units-table-body');
+
   if (!body) return;
 
   const units = unitsFromApi || readStorage(STORAGE_KEYS.units, DEFAULT_UNITS);
@@ -130,7 +164,7 @@ function renderUnits(unitsFromApi = null) {
     <tr>
       <td>${unit.nome}</td>
       <td>${unit.responsavel || '-'}</td>
-      <td>${unit.cidade}</td>
+      <td>${unit.cidade || '-'}</td>
       <td><span class="${badgeClass(unit.status || 'Em Dia')}">${unit.status || 'Em Dia'}</span></td>
       <td>${unit.vencidos ?? '-'}</td>
       <td><a class="link-action" href="unidade-detalhe.html?id=${unit.id || 1}">Ver documentos</a></td>
@@ -140,6 +174,7 @@ function renderUnits(unitsFromApi = null) {
 
 function renderUnitDocs(docsFromApi = null) {
   const body = document.getElementById('unit-docs-body');
+
   if (!body) return;
 
   const docs = docsFromApi || readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
@@ -155,28 +190,48 @@ function renderUnitDocs(docsFromApi = null) {
   `).join('');
 
   const summaryContainer = document.getElementById('unit-summary-cards');
+
   if (!summaryContainer) return;
 
   const counts = docs.reduce((acc, doc) => {
     const status = String(doc.status || '');
-    if (status === 'Em Dia' || status === 'EmDia') acc.emDia += 1;
-    else if (status === 'Vencendo') acc.vencendo += 1;
-    else acc.vencidos += 1;
+
+    if (status === 'Em Dia' || status === 'EmDia') {
+      acc.emDia += 1;
+    } else if (status === 'Vencendo') {
+      acc.vencendo += 1;
+    } else {
+      acc.vencidos += 1;
+    }
+
     return acc;
   }, { emDia: 0, vencendo: 0, vencidos: 0 });
 
   summaryContainer.innerHTML = `
-    <article class="stat-card stat-success"><div class="stat-icon">✓</div><div><div class="label">Em Dia</div><div class="value">${counts.emDia}</div></div></article>
-    <article class="stat-card stat-warning"><div class="stat-icon">!</div><div><div class="label">Vencendo</div><div class="value">${counts.vencendo}</div></div></article>
-    <article class="stat-card stat-danger"><div class="stat-icon">×</div><div><div class="label">Vencidos</div><div class="value">${counts.vencidos}</div></div></article>
-  `;
-}
+    <article class="stat-card stat-success">
+      <div class="stat-icon">✓</div>
+      <div>
+        <div class="label">Em Dia</div>
+        <div class="value">${counts.emDia}</div>
+      </div>
+    </article>
 
-function formatDate(dateValue) {
-  if (!dateValue) return '-';
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return dateValue;
-  return date.toLocaleDateString('pt-BR');
+    <article class="stat-card stat-warning">
+      <div class="stat-icon">!</div>
+      <div>
+        <div class="label">Vencendo</div>
+        <div class="value">${counts.vencendo}</div>
+      </div>
+    </article>
+
+    <article class="stat-card stat-danger">
+      <div class="stat-icon">×</div>
+      <div>
+        <div class="label">Vencidos</div>
+        <div class="value">${counts.vencidos}</div>
+      </div>
+    </article>
+  `;
 }
 
 function setupRequiredDocsModal() {
@@ -185,6 +240,7 @@ function setupRequiredDocsModal() {
   const closeBtn = document.getElementById('fechar-modal-btn');
   const cancelBtn = document.getElementById('cancelar-modal-btn');
   const form = document.getElementById('required-doc-form');
+
   if (!modal || !openBtn || !form) return;
 
   const closeModal = () => {
@@ -202,12 +258,16 @@ function setupRequiredDocsModal() {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
+
     const nome = document.getElementById('novo-doc-nome').value.trim();
     const frequencia = document.getElementById('novo-doc-frequencia').value;
+
     if (!nome || !frequencia) return;
 
     const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+
     docs.push({ nome, frequencia });
+
     writeStorage(STORAGE_KEYS.requiredDocs, docs);
     renderRequiredDocs();
     closeModal();
@@ -223,9 +283,11 @@ function setupUpload() {
   const expiryDate = document.getElementById('data-validade');
   const documentType = document.getElementById('tipo-documento');
   const unitName = document.getElementById('nome-unidade');
+
   if (!form) return;
 
   const pending = readStorage(STORAGE_KEYS.pendingUpload, null);
+
   if (pending) {
     if (fileName) fileName.textContent = `Arquivo selecionado: ${pending.fileName || 'Nenhum arquivo selecionado'}`;
     if (issueDate) issueDate.value = pending.issueDate || '';
@@ -236,6 +298,7 @@ function setupUpload() {
 
   fileInput?.addEventListener('change', () => {
     const selected = fileInput.files && fileInput.files[0];
+
     if (fileName) {
       fileName.textContent = selected ? `Arquivo selecionado: ${selected.name}` : 'Nenhum arquivo selecionado';
     }
@@ -243,6 +306,7 @@ function setupUpload() {
 
   const collectUploadData = () => {
     const selected = fileInput?.files && fileInput.files[0];
+
     return {
       fileName: selected ? selected.name : (pending?.fileName || ''),
       issueDate: issueDate?.value.trim() || '',
@@ -255,6 +319,7 @@ function setupUpload() {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
+
     const uploadData = collectUploadData();
 
     if (!uploadData.fileName || !uploadData.issueDate || !uploadData.expiryDate || !uploadData.documentType) {
@@ -275,6 +340,7 @@ function setupUpload() {
     }
 
     const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+
     docs.unshift({
       nome: uploadData.documentType,
       emissao: uploadData.issueDate,
@@ -296,6 +362,7 @@ function setupAnalysis() {
   const expiryEl = document.getElementById('analysis-expiry-date');
   const confirmBtn = document.getElementById('confirmar-analise-btn');
   const backBtn = document.getElementById('voltar-upload-btn');
+
   if (!confirmBtn) return;
 
   const pending = readStorage(STORAGE_KEYS.pendingUpload, {
@@ -315,6 +382,7 @@ function setupAnalysis() {
 
   confirmBtn.addEventListener('click', () => {
     const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+
     docs.unshift({
       nome: pending.documentType,
       emissao: pending.issueDate,
@@ -338,12 +406,16 @@ async function integrarDashboard() {
   const vencendoEl = document.getElementById('docs-vencendo');
   const vencidosEl = document.getElementById('docs-vencidos');
 
-  if (!totalEl || !emDiaEl || !vencendoEl || !vencidosEl) return;
+  if (!emDiaEl || !vencendoEl || !vencidosEl) return;
   if (typeof fetchDashboard !== 'function') return;
 
   try {
     const dashboard = await fetchDashboard();
-    totalEl.textContent = dashboard.totalUnidades;
+
+    if (totalEl) {
+      totalEl.textContent = dashboard.totalUnidades;
+    }
+
     emDiaEl.textContent = dashboard.documentosEmDia;
     vencendoEl.textContent = dashboard.documentosVencendo;
     vencidosEl.textContent = dashboard.documentosVencidos;
@@ -354,6 +426,7 @@ async function integrarDashboard() {
 
 async function integrarUnidades() {
   const body = document.getElementById('units-table-body');
+
   if (!body) return;
   if (typeof fetchUnidades !== 'function') return;
 
@@ -377,6 +450,7 @@ async function integrarUnidades() {
 
 async function integrarDetalheUnidade() {
   const body = document.getElementById('unit-docs-body');
+
   if (!body) return;
   if (typeof fetchUnidadeDetalhe !== 'function') return;
 
@@ -389,8 +463,13 @@ async function integrarDetalheUnidade() {
     const nomeUnidadeEl = document.getElementById('nome-unidade-detalhe');
     const cidadeUnidadeEl = document.getElementById('cidade-unidade-detalhe');
 
-    if (nomeUnidadeEl) nomeUnidadeEl.textContent = unidade.nome;
-    if (cidadeUnidadeEl) cidadeUnidadeEl.textContent = `${unidade.cidade} - ${unidade.estado}`;
+    if (nomeUnidadeEl) {
+      nomeUnidadeEl.textContent = unidade.nome;
+    }
+
+    if (cidadeUnidadeEl) {
+      cidadeUnidadeEl.textContent = `${unidade.cidade} - ${unidade.estado}`;
+    }
 
     const docsAdaptados = unidade.documentos.map((doc) => ({
       nome: doc.nome,
@@ -411,7 +490,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const current = document.body.dataset.page;
 
   document.querySelectorAll('[data-nav]').forEach(link => {
-    if (link.dataset.nav === current) link.classList.add('active');
+    if (link.dataset.nav === current) {
+      link.classList.add('active');
+    }
   });
 
   renderRequiredDocs();
@@ -425,6 +506,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await testarConexaoApi();
     await testarEndpointDocumentos();
     await integrarDashboard();
+    await integrarUnidades();
   }
 
   if (current === 'unidades') {

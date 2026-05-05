@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -19,23 +19,48 @@
           <div class="brand-subtitle">Gestão de Documentos</div>
         </div>
       </div>
+
       <nav class="sidebar-nav">
-        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
-        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
-        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html">
+          <span class="icon">▦</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a class="nav-link" data-nav="unidades" href="unidades.html">
+          <span class="icon">🏢</span>
+          <span>Unidades</span>
+        </a>
+
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html">
+          <span class="icon">📄</span>
+          <span>Documentos Obrigatórios</span>
+        </a>
       </nav>
+
       <div class="sidebar-footer">
-        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+        <a class="nav-link" href="login.html">
+          <span class="icon">↪</span>
+          <span>Sair</span>
+        </a>
       </div>
     </aside>
 
     <main class="main">
       <header class="page-header">
         <div>
-          <div class="page-title-row"><div class="page-icon">↗</div><h1 class="page-title">Dashboard Geral</h1></div>
-          <p class="page-subtitle">Visão geral da situação documental da sua rede</p>
+          <div class="page-title-row">
+            <div class="page-icon">↗</div>
+            <h1 class="page-title">Dashboard Geral</h1>
+          </div>
 
-          <div id="api-status" class="api-status">Testando conexão com a API...</div>
+          <p class="page-subtitle">
+            Visão geral da situação documental da sua rede
+          </p>
+
+          <div id="api-status" class="api-status">
+            Testando conexão com a API...
+          </div>
+
           <pre id="api-documentos-teste" class="api-debug-box"></pre>
         </div>
       </header>
@@ -46,7 +71,7 @@
             <div class="stat-icon">✓</div>
             <div class="dashboard-clean-content">
               <div class="label">Documentos em dia</div>
-              <div class="value">142</div>
+              <div class="value" id="docs-em-dia">0</div>
             </div>
           </article>
 
@@ -54,7 +79,7 @@
             <div class="stat-icon">!</div>
             <div class="dashboard-clean-content">
               <div class="label">Documentos vencendo</div>
-              <div class="value">23</div>
+              <div class="value" id="docs-vencendo">0</div>
             </div>
           </article>
 
@@ -62,7 +87,7 @@
             <div class="stat-icon">×</div>
             <div class="dashboard-clean-content">
               <div class="label">Documentos vencidos</div>
-              <div class="value">8</div>
+              <div class="value" id="docs-vencidos">0</div>
             </div>
           </article>
         </section>
@@ -71,10 +96,16 @@
           <div class="panel-header dashboard-summary-header">
             <div>
               <h2 class="panel-title">Resumo de unidades</h2>
-              <p class="panel-subtitle">Acompanhe rapidamente o status das principais unidades</p>
+              <p class="panel-subtitle">
+                Acompanhe rapidamente o status das principais unidades
+              </p>
             </div>
-            <a class="link-action" href="unidades.html">Abrir lista completa</a>
+
+            <a class="link-action" href="unidades.html">
+              Abrir lista completa
+            </a>
           </div>
+
           <div class="table-wrap">
             <table class="data-table">
               <thead>
@@ -86,27 +117,14 @@
                   <th>Ação</th>
                 </tr>
               </thead>
-              <tbody>
+
+              <tbody id="units-table-body">
                 <tr>
-                  <td>Centro</td>
-                  <td>Mariana Costa</td>
-                  <td><span class="badge badge-danger soft-badge">Crítico</span></td>
-                  <td>4</td>
-                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
-                </tr>
-                <tr>
-                  <td>Savassi</td>
-                  <td>Pedro Lima</td>
-                  <td><span class="badge badge-warning soft-badge">Atenção</span></td>
-                  <td>2</td>
-                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
-                </tr>
-                <tr>
-                  <td>Pampulha</td>
-                  <td>Juliana Rocha</td>
-                  <td><span class="badge badge-success soft-badge">Em dia</span></td>
-                  <td>0</td>
-                  <td><a class="link-action" href="unidade-detalhe.html">Ver detalhes</a></td>
+                  <td>Carregando...</td>
+                  <td>-</td>
+                  <td><span class="badge badge-neutral">-</span></td>
+                  <td>-</td>
+                  <td>-</td>
                 </tr>
               </tbody>
             </table>
@@ -115,8 +133,8 @@
       </section>
     </main>
   </div>
- <script src="../js/api.js"></script>
-<script src="../js/main.js"></script>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
 </body>
 </html>
-
