@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/pages.css" />
 </head>
+
 <body data-page="unidades">
   <div class="app-shell">
     <aside class="sidebar">
@@ -19,21 +20,43 @@
           <div class="brand-subtitle">Gestão de Documentos</div>
         </div>
       </div>
+
       <nav class="sidebar-nav">
-        <a class="nav-link" data-nav="dashboard" href="dashboard.html"><span class="icon">▦</span><span>Dashboard</span></a>
-        <a class="nav-link" data-nav="unidades" href="unidades.html"><span class="icon">🏢</span><span>Unidades</span></a>
-        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html"><span class="icon">📄</span><span>Documentos Obrigatórios</span></a>
+        <a class="nav-link" data-nav="dashboard" href="dashboard.html">
+          <span class="icon">▦</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a class="nav-link" data-nav="unidades" href="unidades.html">
+          <span class="icon">🏢</span>
+          <span>Unidades</span>
+        </a>
+
+        <a class="nav-link" data-nav="documentos" href="documentos-obrigatorios.html">
+          <span class="icon">📄</span>
+          <span>Documentos Obrigatórios</span>
+        </a>
       </nav>
+
       <div class="sidebar-footer">
-        <a class="nav-link" href="login.html"><span class="icon">↪</span><span>Sair</span></a>
+        <a class="nav-link" href="login.html">
+          <span class="icon">↪</span>
+          <span>Sair</span>
+        </a>
       </div>
     </aside>
 
     <main class="main">
       <header class="page-header">
         <div>
-          <div class="page-title-row"><div class="page-icon">🏢</div><h1 class="page-title">Unidades</h1></div>
-          <p class="page-subtitle">Gerencie todas as unidades da sua rede</p>
+          <div class="page-title-row">
+            <div class="page-icon">🏢</div>
+            <h1 class="page-title">Unidades</h1>
+          </div>
+
+          <p class="page-subtitle">
+            Gerencie todas as unidades da sua rede
+          </p>
         </div>
       </header>
 
@@ -50,13 +73,24 @@
                 <th>Ação</th>
               </tr>
             </thead>
-            <tbody id="units-table-body"></tbody>
+
+            <tbody id="units-table-body">
+              <tr>
+                <td>Carregando...</td>
+                <td>-</td>
+                <td>-</td>
+                <td><span class="badge badge-neutral">-</span></td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
+
+  <script src="../js/api.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
-
