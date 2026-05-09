@@ -39,3 +39,39 @@ async function fetchUnidadeDetalhe(id) {
 
   return await response.json();
 }
+
+async function fetchDocumentosObrigatorios() {
+  const response = await fetch(`${API_URL}/DocumentosObrigatorios`);
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar documentos obrigatórios");
+  }
+
+  return await response.json();
+}
+
+async function criarDocumentoObrigatorio(documento) {
+  const response = await fetch(`${API_URL}/DocumentosObrigatorios`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(documento)
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao criar documento obrigatório");
+  }
+
+  return await response.json();
+}
+
+async function deletarDocumentoObrigatorio(id) {
+  const response = await fetch(`${API_URL}/DocumentosObrigatorios/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao deletar documento obrigatório");
+  }
+}

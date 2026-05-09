@@ -138,19 +138,58 @@ async function testarEndpointDocumentos() {
   }
 }
 
-function renderRequiredDocs() {
+async function renderRequiredDocs() {
   const body = document.getElementById('required-docs-body');
 
   if (!body) return;
 
-  const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+  try {
+    let docs = [];
 
-  body.innerHTML = docs.map(doc => `
-    <tr>
-      <td>${doc.nome}</td>
-      <td><span class="badge badge-neutral">${doc.frequencia}</span></td>
-    </tr>
-  `).join('');
+    if (typeof fetchDocumentosObrigatorios === 'function') {
+      docs = await fetchDocumentosObrigatorios();
+    } else {
+      docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+    }
+
+    if (!docs.length) {
+      body.innerHTML = `
+        <tr>
+          <td>Nenhum documento obrigatório cadastrado.</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+      `;
+      return;
+    }
+
+    body.innerHTML = docs.map((doc, index) => `
+      <tr>
+        <td>${doc.nome}</td>
+        <td><span class="badge badge-neutral">${doc.frequencia}</span></td>
+        <td>
+          <button
+            class="btn btn-secondary"
+            type="button"
+            data-delete-required-doc="${doc.id ?? index}"
+            data-delete-required-index="${index}"
+          >
+            Excluir
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (error) {
+    console.error('Erro ao carregar documentos obrigatórios:', error);
+
+    body.innerHTML = `
+      <tr>
+        <td>Erro ao carregar documentos obrigatórios.</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+    `;
+  }
 }
 
 function renderUnits(unitsFromApi = null) {
@@ -240,6 +279,7 @@ function setupRequiredDocsModal() {
   const closeBtn = document.getElementById('fechar-modal-btn');
   const cancelBtn = document.getElementById('cancelar-modal-btn');
   const form = document.getElementById('required-doc-form');
+  const body = document.getElementById('required-docs-body');
 
   if (!modal || !openBtn || !form) return;
 
@@ -256,7 +296,7 @@ function setupRequiredDocsModal() {
     if (event.target === modal) closeModal();
   });
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const nome = document.getElementById('novo-doc-nome').value.trim();
@@ -264,13 +304,49 @@ function setupRequiredDocsModal() {
 
     if (!nome || !frequencia) return;
 
-    const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+    try {
+      if (typeof criarDocumentoObrigatorio === 'function') {
+        await criarDocumentoObrigatorio({ nome, frequencia });
+      } else {
+        const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+        docs.push({ nome, frequencia });
+        writeStorage(STORAGE_KEYS.requiredDocs, docs);
+      }
 
-    docs.push({ nome, frequencia });
+      await renderRequiredDocs();
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao salvar documento obrigatório:', error);
+      alert('Erro ao salvar documento obrigatório.');
+    }
+  });
 
-    writeStorage(STORAGE_KEYS.requiredDocs, docs);
-    renderRequiredDocs();
-    closeModal();
+  body?.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-delete-required-doc]');
+
+    if (!button) return;
+
+    const id = button.dataset.deleteRequiredDoc;
+    const index = Number(button.dataset.deleteRequiredIndex);
+
+    const confirmar = confirm('Deseja excluir este documento obrigatório?');
+
+    if (!confirmar) return;
+
+    try {
+      if (typeof deletarDocumentoObrigatorio === 'function') {
+        await deletarDocumentoObrigatorio(id);
+      } else {
+        const docs = readStorage(STORAGE_KEYS.requiredDocs, DEFAULT_REQUIRED_DOCS);
+        docs.splice(index, 1);
+        writeStorage(STORAGE_KEYS.requiredDocs, docs);
+      }
+
+      await renderRequiredDocs();
+    } catch (error) {
+      console.error('Erro ao excluir documento obrigatório:', error);
+      alert('Erro ao excluir documento obrigatório.');
+    }
   });
 }
 
@@ -495,7 +571,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  renderRequiredDocs();
+  await renderRequiredDocs();
   renderUnits();
   renderUnitDocs();
   setupRequiredDocsModal();
