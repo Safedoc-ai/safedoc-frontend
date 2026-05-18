@@ -2,7 +2,8 @@ const STORAGE_KEYS = {
   requiredDocs: 'safedoc_required_docs',
   units: 'safedoc_units',
   unitDocs: 'safedoc_unit_docs',
-  pendingUpload: 'safedoc_pending_upload'
+  pendingUpload: 'safedoc_pending_upload',
+  pendingAnalysis: 'safedoc_pending_analysis'
 };
 
 const DEFAULT_REQUIRED_DOCS = [
@@ -76,6 +77,38 @@ function formatDate(dateValue) {
   if (Number.isNaN(date.getTime())) return dateValue;
 
   return date.toLocaleDateString('pt-BR');
+}
+
+function formatDateForApi(dateValue) {
+  if (!dateValue) return '';
+
+  if (dateValue.includes('T')) return dateValue;
+
+  return `${dateValue}T00:00:00`;
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function dataUrlToFile(dataUrl, fileName, mimeType) {
+  const arr = dataUrl.split(',');
+  const base64 = arr[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return new File([bytes], fileName, { type: mimeType || 'application/octet-stream' });
 }
 
 async function testarConexaoApi() {
@@ -350,83 +383,101 @@ function setupRequiredDocsModal() {
   });
 }
 
-function setupUpload() {
+async function setupUpload() {
   const fileInput = document.getElementById('arquivo-documento');
   const fileName = document.getElementById('upload-file-name');
-  const sendButton = document.getElementById('enviar-documento-btn');
   const form = document.getElementById('upload-form');
   const issueDate = document.getElementById('data-emissao');
   const expiryDate = document.getElementById('data-validade');
   const documentType = document.getElementById('tipo-documento');
-  const unitName = document.getElementById('nome-unidade');
+  const unitSelect = document.getElementById('unidade-id');
 
   if (!form) return;
 
-  const pending = readStorage(STORAGE_KEYS.pendingUpload, null);
+  try {
+    if (unitSelect && typeof fetchUnidades === 'function') {
+      const unidades = await fetchUnidades();
 
-  if (pending) {
-    if (fileName) fileName.textContent = `Arquivo selecionado: ${pending.fileName || 'Nenhum arquivo selecionado'}`;
-    if (issueDate) issueDate.value = pending.issueDate || '';
-    if (expiryDate) expiryDate.value = pending.expiryDate || '';
-    if (documentType) documentType.value = pending.documentType || '';
-    if (unitName) unitName.value = pending.unitName || 'Unidade Centro';
+      if (unidades.length) {
+        unitSelect.innerHTML = unidades.map(unidade => `
+          <option value="${unidade.id}">
+            ${unidade.nome}
+          </option>
+        `).join('');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao carregar unidades no upload:', error);
   }
 
   fileInput?.addEventListener('change', () => {
     const selected = fileInput.files && fileInput.files[0];
 
     if (fileName) {
-      fileName.textContent = selected ? `Arquivo selecionado: ${selected.name}` : 'Nenhum arquivo selecionado';
+      fileName.textContent = selected
+        ? `Arquivo selecionado: ${selected.name}`
+        : 'Nenhum arquivo selecionado';
     }
   });
 
-  const collectUploadData = () => {
-    const selected = fileInput?.files && fileInput.files[0];
-
-    return {
-      fileName: selected ? selected.name : (pending?.fileName || ''),
-      issueDate: issueDate?.value.trim() || '',
-      expiryDate: expiryDate?.value.trim() || '',
-      documentType: documentType?.value || '',
-      unitName: unitName?.value || 'Unidade Centro',
-      status: 'Em Dia'
-    };
-  };
-
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const uploadData = collectUploadData();
+    const selected = fileInput?.files && fileInput.files[0];
+    const nomeDocumento = documentType?.value || '';
+    const dataEmissao = issueDate?.value || '';
+    const dataValidade = expiryDate?.value || '';
+    const unidadeId = unitSelect?.value || '1';
+    const unidadeNome = unitSelect?.options[unitSelect.selectedIndex]?.text?.trim() || 'Matriz BH';
 
-    if (!uploadData.fileName || !uploadData.issueDate || !uploadData.expiryDate || !uploadData.documentType) {
-      alert('Preencha arquivo, tipo do documento, data de emissão e data de validade antes de analisar.');
+    if (!selected || !nomeDocumento || !dataEmissao || !dataValidade || !unidadeId) {
+      alert('Preencha arquivo, tipo do documento, data de emissão, data de validade e unidade.');
       return;
     }
 
-    writeStorage(STORAGE_KEYS.pendingUpload, uploadData);
-    window.location.href = 'analise-ia.html';
-  });
+    try {
+      const submitButton = form.querySelector('button[type="submit"]');
 
-  sendButton?.addEventListener('click', () => {
-    const uploadData = collectUploadData();
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Analisando...';
+      }
 
-    if (!uploadData.fileName || !uploadData.issueDate || !uploadData.expiryDate || !uploadData.documentType) {
-      alert('Preencha todos os campos antes de enviar.');
-      return;
+      const resultadoAnalise = await analisarIaMock({
+        nomeDocumento,
+        dataEmissao: formatDateForApi(dataEmissao),
+        dataValidade: formatDateForApi(dataValidade),
+        unidadeId: Number(unidadeId)
+      });
+
+      const fileDataUrl = await fileToDataUrl(selected);
+
+      writeStorage(STORAGE_KEYS.pendingUpload, {
+        fileName: selected.name,
+        fileType: selected.type,
+        fileDataUrl,
+        documentType: nomeDocumento,
+        issueDate: dataEmissao,
+        expiryDate: dataValidade,
+        unidadeId,
+        unitName: unidadeNome,
+        status: resultadoAnalise.status
+      });
+
+      writeStorage(STORAGE_KEYS.pendingAnalysis, resultadoAnalise);
+
+      window.location.href = 'analise-ia.html';
+    } catch (error) {
+      console.error('Erro ao analisar documento:', error);
+      alert('Erro ao analisar documento com IA mock.');
+
+      const submitButton = form.querySelector('button[type="submit"]');
+
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Analisar com IA Mock';
+      }
     }
-
-    const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
-
-    docs.unshift({
-      nome: uploadData.documentType,
-      emissao: uploadData.issueDate,
-      validade: uploadData.expiryDate,
-      status: uploadData.status
-    });
-
-    writeStorage(STORAGE_KEYS.unitDocs, docs);
-    localStorage.removeItem(STORAGE_KEYS.pendingUpload);
-    window.location.href = 'unidade-detalhe.html';
   });
 }
 
@@ -436,39 +487,75 @@ function setupAnalysis() {
   const unitEl = document.getElementById('analysis-unit-name');
   const issueEl = document.getElementById('analysis-issue-date');
   const expiryEl = document.getElementById('analysis-expiry-date');
+  const statusEl = document.getElementById('analysis-status');
+  const messageEl = document.getElementById('analysis-message');
+  const suggestedDateEl = document.getElementById('analysis-suggested-date');
+  const cnpjEl = document.getElementById('analysis-cnpj');
+  const orgaoEl = document.getElementById('analysis-orgao');
   const confirmBtn = document.getElementById('confirmar-analise-btn');
   const backBtn = document.getElementById('voltar-upload-btn');
 
   if (!confirmBtn) return;
 
-  const pending = readStorage(STORAGE_KEYS.pendingUpload, {
-    fileName: 'Nenhum arquivo selecionado',
-    documentType: 'Alvará de Funcionamento',
-    unitName: 'Unidade Centro',
-    issueDate: '15/08/2025',
-    expiryDate: '15/08/2026',
-    status: 'Em Dia'
-  });
+  const pending = readStorage(STORAGE_KEYS.pendingUpload, null);
+  const analysis = readStorage(STORAGE_KEYS.pendingAnalysis, null);
 
-  if (fileNameEl) fileNameEl.textContent = pending.fileName || 'Nenhum arquivo selecionado';
-  if (typeEl) typeEl.textContent = pending.documentType || '-';
-  if (unitEl) unitEl.textContent = pending.unitName || 'Unidade Centro';
-  if (issueEl) issueEl.textContent = pending.issueDate || '-';
-  if (expiryEl) expiryEl.textContent = pending.expiryDate || '-';
+  if (!pending || !analysis) {
+    if (messageEl) {
+      messageEl.textContent = 'Nenhuma análise pendente encontrada. Volte e envie um documento.';
+    }
 
-  confirmBtn.addEventListener('click', () => {
-    const docs = readStorage(STORAGE_KEYS.unitDocs, DEFAULT_UNIT_DOCS);
+    confirmBtn.disabled = true;
 
-    docs.unshift({
-      nome: pending.documentType,
-      emissao: pending.issueDate,
-      validade: pending.expiryDate,
-      status: pending.status || 'Em Dia'
+    backBtn?.addEventListener('click', () => {
+      window.location.href = 'upload-documento.html';
     });
 
-    writeStorage(STORAGE_KEYS.unitDocs, docs);
-    localStorage.removeItem(STORAGE_KEYS.pendingUpload);
-    window.location.href = 'unidade-detalhe.html';
+    return;
+  }
+
+  if (fileNameEl) fileNameEl.textContent = pending.fileName || 'Nenhum arquivo selecionado';
+  if (typeEl) typeEl.textContent = analysis.tipoDocumento || pending.documentType || '-';
+  if (unitEl) unitEl.textContent = pending.unitName || 'Matriz BH';
+  if (issueEl) issueEl.textContent = formatDate(pending.issueDate);
+  if (expiryEl) expiryEl.textContent = formatDate(pending.expiryDate);
+  if (statusEl) statusEl.textContent = analysis.status || '-';
+  if (messageEl) messageEl.textContent = analysis.mensagem || 'Análise mock realizada.';
+  if (suggestedDateEl) suggestedDateEl.textContent = formatDate(analysis.dataValidadeSugerida);
+  if (cnpjEl) cnpjEl.textContent = analysis.cnpjDetectado || '-';
+  if (orgaoEl) orgaoEl.textContent = analysis.orgaoEmissor || '-';
+
+  confirmBtn.addEventListener('click', async () => {
+    try {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Enviando...';
+
+      if (!pending.fileDataUrl) {
+        throw new Error('Arquivo pendente não encontrado.');
+      }
+
+      const arquivo = dataUrlToFile(pending.fileDataUrl, pending.fileName, pending.fileType);
+
+      const formData = new FormData();
+      formData.append('arquivo', arquivo);
+      formData.append('nome', pending.documentType);
+      formData.append('dataEmissao', formatDateForApi(pending.issueDate));
+      formData.append('dataValidade', formatDateForApi(pending.expiryDate));
+      formData.append('unidadeId', pending.unidadeId || '1');
+
+      await uploadDocumento(formData);
+
+      localStorage.removeItem(STORAGE_KEYS.pendingUpload);
+      localStorage.removeItem(STORAGE_KEYS.pendingAnalysis);
+
+      window.location.href = `unidade-detalhe.html?id=${pending.unidadeId || 1}`;
+    } catch (error) {
+      console.error('Erro ao confirmar envio:', error);
+      alert('Erro ao confirmar envio do documento.');
+
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirmar envio';
+    }
   });
 
   backBtn?.addEventListener('click', () => {
@@ -575,7 +662,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderUnits();
   renderUnitDocs();
   setupRequiredDocsModal();
-  setupUpload();
+  await setupUpload();
   setupAnalysis();
 
   if (current === 'dashboard') {

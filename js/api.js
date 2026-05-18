@@ -75,3 +75,32 @@ async function deletarDocumentoObrigatorio(id) {
     throw new Error("Erro ao deletar documento obrigatório");
   }
 }
+
+async function analisarIaMock(dadosAnalise) {
+  const response = await fetch(`${API_URL}/AnaliseIA/mock`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(dadosAnalise)
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao analisar documento com IA mock");
+  }
+
+  return await response.json();
+}
+
+async function uploadDocumento(formData) {
+  const response = await fetch(`${API_URL}/Documentos/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao enviar documento");
+  }
+
+  return await response.json();
+}
