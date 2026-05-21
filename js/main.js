@@ -143,34 +143,6 @@ async function testarConexaoApi() {
   }
 }
 
-async function testarEndpointDocumentos() {
-  try {
-    const response = await fetch('http://localhost:5291/api/Documentos');
-
-    if (!response.ok) {
-      throw new Error('Erro ao consultar documentos');
-    }
-
-    const dados = await response.json();
-
-    const documentosEl = document.getElementById('api-documentos-teste');
-
-    if (documentosEl) {
-      documentosEl.textContent = JSON.stringify(dados, null, 2);
-    }
-
-    console.log('Documentos endpoint:', dados);
-  } catch (erro) {
-    console.error('Erro no endpoint de documentos:', erro);
-
-    const documentosEl = document.getElementById('api-documentos-teste');
-
-    if (documentosEl) {
-      documentosEl.textContent = 'Não foi possível consultar /api/Documentos';
-    }
-  }
-}
-
 async function renderRequiredDocs() {
   const body = document.getElementById('required-docs-body');
 
@@ -667,7 +639,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (current === 'dashboard') {
     await testarConexaoApi();
-    await testarEndpointDocumentos();
     await integrarDashboard();
     await integrarUnidades();
   }
